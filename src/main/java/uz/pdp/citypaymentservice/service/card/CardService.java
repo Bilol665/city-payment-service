@@ -1,6 +1,5 @@
 package uz.pdp.citypaymentservice.service.card;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CardService {
     private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
@@ -36,9 +34,7 @@ public class CardService {
     }
 
     public void deleteCardById(UUID cardId){
-        CardEntity card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new DataNotFoundException("Card not found"));
-        cardRepository.delete(card);
+        cardRepository.deleteById(cardId);
     }
 
 
