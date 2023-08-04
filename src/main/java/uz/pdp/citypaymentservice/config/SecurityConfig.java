@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/payment/**").permitAll()
+                .anyRequest().permitAll()
                 .and()
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtFilterToken(jwtService,authenticationService),
