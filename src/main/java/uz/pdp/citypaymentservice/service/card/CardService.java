@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citypaymentservice.domain.dto.CardDto;
-import uz.pdp.citypaymentservice.domain.dto.UserDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.exception.DataNotFoundException;
 import uz.pdp.citypaymentservice.repository.CardRepository;
-import uz.pdp.citypaymentservice.service.user.AuthService;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,13 +16,9 @@ import java.util.UUID;
 public class CardService {
     private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
-    private final AuthService authService;
-
     public CardEntity saveCard(CardDto cardDto, UUID ownerId){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
-        UserDto user = authService.loadById(ownerId);
-        user.setId(ownerId);
-        card.setOwnerId(user.getId());
+        card.setOwnerId(ownerId);
         card.setBalance(0.0);
         return cardRepository.save(card);
     }

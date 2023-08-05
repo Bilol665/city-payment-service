@@ -1,6 +1,7 @@
 package uz.pdp.citypaymentservice.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,10 +17,10 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto extends BaseEntity implements UserDetails {
     private String email;
     private String password;
+    @Enumerated(value = EnumType.STRING)
     private List<RoleDto> roles;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

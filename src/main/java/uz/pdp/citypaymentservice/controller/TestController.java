@@ -1,5 +1,6 @@
 package uz.pdp.citypaymentservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class TestController {
     private final CardService cardService;
     @PostMapping("/save/{id}")
     public ResponseEntity<CardEntity>save(
-            @PathVariable UUID id,
-            @RequestBody CardDto cardDto
+             @PathVariable UUID id,
+             @RequestBody CardDto cardDto
     ){
         return ResponseEntity.ok(cardService.saveCard(cardDto,id));
     }
@@ -34,7 +35,7 @@ public class TestController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CardEntity>update(
         @PathVariable UUID id,
-        @RequestBody CardDto cardDto
+         @RequestBody CardDto cardDto
     ){
         return ResponseEntity.ok(cardService.updateCardById(id,cardDto));
     }
