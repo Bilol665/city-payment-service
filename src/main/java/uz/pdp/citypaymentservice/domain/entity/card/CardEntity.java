@@ -1,6 +1,9 @@
 package uz.pdp.citypaymentservice.domain.entity.card;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import uz.pdp.citypaymentservice.domain.entity.BaseEntity;
 
@@ -13,6 +16,7 @@ import java.util.UUID;
 @Setter
 @Builder
 public class CardEntity extends BaseEntity {
+    @Column(unique = true,nullable = false)
     private String number;
     private String holderName;
     private Integer pinCode;
@@ -20,4 +24,7 @@ public class CardEntity extends BaseEntity {
     private Integer expiredDate;
     private Double balance;
     private UUID ownerId;
+    @Enumerated(value = EnumType.STRING)
+    private CardType type;
+
 }
