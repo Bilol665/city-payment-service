@@ -48,4 +48,12 @@ public class CardService {
         modelMapper.map(cardDto,card);
         return cardRepository.save(card);
     }
+
+    public void fillBalance(UUID cardId,Double balance,Principal principal){
+        UserReadDto userReadDto = authService.loadById(principal.getName());
+        CardEntity card = cardRepository.getReferenceById(cardId);
+            card.setBalance(balance);
+            mailService.fillBalanceMessage(userReadDto.getEmail(),card.getNumber(),card.getBalance());
+            cardRepository.save(card);
+    }
 }

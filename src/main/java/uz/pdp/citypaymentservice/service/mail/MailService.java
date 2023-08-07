@@ -45,4 +45,13 @@ public class MailService {
                 ;
         sendMail(email,message);
     }
+
+
+    public void fillBalanceMessage(String email,String number,Double Balance) {
+        String message = "Successfully incoming your balance ✅"+ '\n'+
+                "Your card number💳 :" + number + '\n'+
+                "Your balance💵 :" + Balance
+                ;
+        sendMail(email,message);
+    }
 }

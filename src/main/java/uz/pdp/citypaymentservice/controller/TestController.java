@@ -49,4 +49,14 @@ public class TestController {
         cardService.deleteCardById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PutMapping("/fill/{id}")
+    public ResponseEntity<HttpStatus>fill(
+                Principal principal,
+                @PathVariable UUID id,
+                @RequestParam Double balance
+    ){
+        cardService.fillBalance(id,balance,principal);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
