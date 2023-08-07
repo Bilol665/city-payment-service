@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import uz.pdp.citypaymentservice.domain.dto.UserDto;
+import uz.pdp.citypaymentservice.domain.dto.UserReadDto;
 
 import java.net.URI;
 import java.util.UUID;
@@ -33,10 +35,17 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public UserDto loadById(UUID id){
+    public UserReadDto loadById(String username){
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/auth/get/user")
+                .queryParam("username", username);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UUID> entity= new HttpEntity<>(id,httpHeaders);
-        return restTemplate.exchange(URI.create(url+"/api/v1/auth/getById/"+id), HttpMethod.GET,entity, UserDto.class).getBody();
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+
+        return restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                UserReadDto.class).getBody();
     }
 }

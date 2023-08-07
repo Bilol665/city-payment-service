@@ -9,6 +9,7 @@ import uz.pdp.citypaymentservice.domain.dto.CardDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.service.card.CardService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,12 +18,12 @@ import java.util.UUID;
 @RequestMapping("/payment/api/v1/card")
 public class TestController {
     private final CardService cardService;
-    @PostMapping("/save/{id}")
+    @PostMapping("/save")
     public ResponseEntity<CardEntity>save(
-             @PathVariable UUID id,
-             @RequestBody CardDto cardDto
+             Principal principal,
+            @RequestBody CardDto cardDto
     ){
-        return ResponseEntity.ok(cardService.saveCard(cardDto,id));
+        return ResponseEntity.ok(cardService.saveCard(cardDto,principal));
     }
 
     @GetMapping("/get/{id}")
@@ -46,6 +47,16 @@ public class TestController {
             @PathVariable UUID id
     ){
         cardService.deleteCardById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/fill/{id}")
+    public ResponseEntity<HttpStatus>fill(
+                Principal principal,
+                @PathVariable UUID id,
+                @RequestParam Double balance
+    ){
+        cardService.fillBalance(id,balance,principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
