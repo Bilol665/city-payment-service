@@ -51,12 +51,20 @@ public class TestController {
     }
 
     @PutMapping("/fill/{id}")
-    public ResponseEntity<HttpStatus>fill(
+    public ResponseEntity<CardEntity>fill(
                 Principal principal,
                 @PathVariable UUID id,
                 @RequestParam Double balance
     ){
-        cardService.fillBalance(id,balance,principal);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(cardService.fillBalance(id,balance,principal));
+    }
+
+    @PutMapping("/p2p")
+    public ResponseEntity<CardEntity>p2p(
+            @RequestParam String sender,
+            @RequestParam String receiver,
+            @RequestParam Double balance
+    ){
+        return  ResponseEntity.ok(cardService.PeerToPeer(sender,receiver,balance));
     }
 }

@@ -8,6 +8,7 @@ import uz.pdp.citypaymentservice.domain.dto.UserDto;
 import uz.pdp.citypaymentservice.domain.dto.UserReadDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.exception.DataNotFoundException;
+import uz.pdp.citypaymentservice.exception.NotEnoughBalance;
 import uz.pdp.citypaymentservice.repository.CardRepository;
 import uz.pdp.citypaymentservice.service.mail.MailService;
 import uz.pdp.citypaymentservice.service.user.AuthService;
@@ -26,7 +27,7 @@ public class CardService {
 
     public CardEntity saveCard(CardDto cardDto,  Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
-        UserReadDto userDto = authService.loadById(principal.getName());
+        UserReadDto userDto = authService.loadByName(principal.getName());
         card.setOwnerId(userDto.getId());
         card.setBalance(0.0);
         mailService.saveCardMessage(userDto.getEmail(),card.getNumber(),card.getBalance());
@@ -49,11 +50,34 @@ public class CardService {
         return cardRepository.save(card);
     }
 
-    public void fillBalance(UUID cardId,Double balance,Principal principal){
-        UserReadDto userReadDto = authService.loadById(principal.getName());
+    public CardEntity fillBalance(UUID cardId,Double balance,Principal principal){
+        UserReadDto userReadDto = authService.loadByName(principal.getName());
         CardEntity card = cardRepository.getReferenceById(cardId);
             card.setBalance(balance);
             mailService.fillBalanceMessage(userReadDto.getEmail(),card.getNumber(),card.getBalance());
-            cardRepository.save(card);
+            return cardRepository.save(card);
+    }
+
+    public CardEntity PeerToPeer(String sender,String receiver,Double balance){
+        CardEntity senderCard = cardRepository.findCardEntitiesByNumber(sender)
+                .orElseThrow(()->new DataNotFoundException("Card not found"));
+        CardEntity receiverCard= cardRepository.findCardEntitiesByNumber(receiver)
+                .orElseThrow(()->new DataNotFoundException("Card not found"));
+
+        UserReadDto senderUser = authService.loadById(senderCard.getOwnerId());
+        UserReadDto receiverUser = authService.loadById(receiverCard.getOwnerId());
+
+        if (senderCard.getBalance()<balance){
+            throw new NotEnoughBalance("not enough money");
+        }
+
+        senderCard.setBalance(senderCard.getBalance()-balance);
+        receiverCard.setBalance(receiverCard.getBalance()+balance);
+
+        mailService.receiverMessage(receiverUser.getEmail(),balance,senderCard.getNumber());
+        mailService.senderMessage(senderUser.getEmail(),balance,receiverCard.getNumber());
+
+        cardRepository.save(senderCard);
+        return cardRepository.save(receiverCard);
     }
 }
