@@ -4,10 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citypaymentservice.domain.dto.CardDto;
+import uz.pdp.citypaymentservice.domain.dto.UserDto;
+import uz.pdp.citypaymentservice.domain.dto.UserReadDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.exception.DataNotFoundException;
 import uz.pdp.citypaymentservice.repository.CardRepository;
+import uz.pdp.citypaymentservice.service.mail.MailService;
+import uz.pdp.citypaymentservice.service.user.AuthService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,10 +21,15 @@ import java.util.UUID;
 public class CardService {
     private final CardRepository cardRepository;
     private final ModelMapper modelMapper;
-    public CardEntity saveCard(CardDto cardDto, UUID ownerId){
+    private final AuthService authService;
+    private final MailService mailService;
+
+    public CardEntity saveCard(CardDto cardDto,  Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
-        card.setOwnerId(ownerId);
+        UserReadDto userDto = authService.loadById(principal.getName());
+        card.setOwnerId(userDto.getId());
         card.setBalance(0.0);
+        mailService.saveCardMessage(userDto.getEmail(),card.getNumber(),card.getBalance());
         return cardRepository.save(card);
     }
 
