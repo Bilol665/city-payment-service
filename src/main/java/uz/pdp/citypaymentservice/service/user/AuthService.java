@@ -35,9 +35,24 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public UserReadDto loadById(String username){
+    public UserReadDto loadByName(String username){
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/auth/get/user")
                 .queryParam("username", username);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+
+        return restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                UserReadDto.class).getBody();
+    }
+
+
+    public UserReadDto loadById(UUID id){
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/auth/get/id")
+                .queryParam("id", id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);

@@ -25,7 +25,7 @@ public class MailService {
     private String notificationServiceUrl;
     private final AuthService authService;
     private void sendMail(String email, String message) {
-         UserReadDto dto = authService.loadById(email);
+         UserReadDto dto = authService.loadByName(email);
         MailDto mailDto = new MailDto(message,dto.getEmail());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -52,6 +52,21 @@ public class MailService {
                 "Your card number💳 :" + number + '\n'+
                 "Your balance💵 :" + Balance
                 ;
+        sendMail(email,message);
+    }
+
+    public void receiverMessage(String email,Double money,String number){
+        String message= "Your card has been credited"+'\n'+
+                        "Sender card💳 :" +number + '\n' +
+                        "amount of money💵 :" + money;
+        sendMail(email,message);
+    }
+
+
+    public void senderMessage(String email,Double money,String number){
+        String message= "Money has been transferred from your card to another card"+'\n'+
+                "Receiver card💳 :" +number + '\n' +
+                "amount of money💵 :" + money;
         sendMail(email,message);
     }
 }
