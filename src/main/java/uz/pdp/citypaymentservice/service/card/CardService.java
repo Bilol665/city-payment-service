@@ -34,8 +34,9 @@ public class CardService {
         return cardRepository.save(card);
     }
 
-    public List<CardEntity>getCard(UUID ownerId){
-        return cardRepository.findCardEntitiesByOwnerId(ownerId);
+    public List<CardEntity>getCard(Principal  principal){
+        UserReadDto userReadDto = authService.loadByName(principal.getName());
+        return cardRepository.findCardEntitiesByOwnerId(userReadDto.getId());
     }
 
     public void deleteCardById(UUID cardId){
