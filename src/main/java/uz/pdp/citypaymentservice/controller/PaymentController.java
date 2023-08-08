@@ -1,6 +1,5 @@
 package uz.pdp.citypaymentservice.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/payment/api/v1/card")
-public class TestController {
+public class PaymentController {
     private final CardService cardService;
     @PostMapping("/save")
     public ResponseEntity<CardEntity>save(
@@ -26,11 +25,11 @@ public class TestController {
         return ResponseEntity.ok(cardService.saveCard(cardDto,principal));
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get")
     public ResponseEntity<List<CardEntity>>get(
-        @PathVariable UUID id
+       Principal principal
     ){
-       return ResponseEntity.ok(cardService.getCard(id));
+       return ResponseEntity.ok(cardService.getCard(principal));
     }
 
     @PutMapping("/update/{id}")
