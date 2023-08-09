@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.pdp.citypaymentservice.domain.dto.CardDto;
-import uz.pdp.citypaymentservice.domain.dto.UserDto;
 import uz.pdp.citypaymentservice.domain.dto.UserReadDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.exception.DataNotFoundException;
@@ -59,26 +58,28 @@ public class CardService {
             return cardRepository.save(card);
     }
 
-    public CardEntity PeerToPeer(String sender,String receiver,Double balance){
-        CardEntity senderCard = cardRepository.findCardEntitiesByNumber(sender)
+    public CardEntity peerToPeer(Principal sender, String receiver, Double amount){
+        UserReadDto senderUser = authService.loadByName(sender.getName());
+
+        CardEntity senderCard = cardRepository.findCardEntityByOwnerId(senderUser.getId())
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
-        CardEntity receiverCard= cardRepository.findCardEntitiesByNumber(receiver)
+        CardEntity receiverCard= cardRepository.findCardEntityByNumber(receiver)
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
 
-        UserReadDto senderUser = authService.loadById(senderCard.getOwnerId());
         UserReadDto receiverUser = authService.loadById(receiverCard.getOwnerId());
 
-        if (senderCard.getBalance()<balance){
+
+        if (senderCard.getBalance()<amount){
             throw new NotEnoughBalance("not enough money");
         }
 
-        senderCard.setBalance(senderCard.getBalance()-balance);
-        receiverCard.setBalance(receiverCard.getBalance()+balance);
+        senderCard.setBalance(senderCard.getBalance()-amount);
+        receiverCard.setBalance(receiverCard.getBalance()+amount);
 
-        mailService.receiverMessage(receiverUser.getEmail(),balance,senderCard.getNumber());
-        mailService.senderMessage(senderUser.getEmail(),balance,receiverCard.getNumber());
+        mailService.receiverMessage(receiverUser.getEmail(),amount,senderCard.getNumber());
+        mailService.senderMessage(senderUser.getEmail(),amount,receiverCard.getNumber());
 
-        cardRepository.save(senderCard);
-        return cardRepository.save(receiverCard);
+        cardRepository.save(receiverCard);
+        return cardRepository.save(senderCard);
     }
 }
