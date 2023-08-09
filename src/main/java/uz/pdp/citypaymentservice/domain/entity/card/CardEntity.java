@@ -20,8 +20,7 @@ public class CardEntity extends BaseEntity {
     private String number;
     private String holderName;
     private Integer pinCode;
-    private Integer createdDate;
-    private Integer expiredDate;
+    private String expiredDate;
     private Double balance;
     private UUID ownerId;
     @Enumerated(value = EnumType.STRING)
