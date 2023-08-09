@@ -66,4 +66,12 @@ public class PaymentController {
     ){
         return  ResponseEntity.ok(cardService.peerToPeer(principal,receiver,balance));
     }
+    @PutMapping("/transact")
+    public ResponseEntity<CardEntity>p2p(
+            Principal principal,
+            @RequestParam UUID receiver,
+            @RequestParam Double balance
+    ){
+        return  ResponseEntity.ok(cardService.peerToPeer(principal,receiver,balance));
+    }
 }
