@@ -64,23 +64,20 @@ public class CardService {
             return cardRepository.save(card);
     }
 
-    public CardEntity peerToPeer(Principal sender, String receiver, Double amount){
-        UserReadDto senderUser = authService.loadByName(sender.getName());
+    public CardEntity peerToPeer(String senderC,String receiverC ,Double cash){
 
-        CardEntity senderCard = cardRepository.findCardEntityByOwnerId(senderUser.getId())
+        CardEntity senderCard = cardRepository.findCardEntityByNumber(senderC)
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
-        CardEntity receiverCard= cardRepository.findCardEntityByNumber(receiver)
+        CardEntity receiverCard= cardRepository.findCardEntityByNumber(receiverC)
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
-
-        UserReadDto receiverUser = authService.loadById(receiverCard.getOwnerId());
-
-
-        if (senderCard.getBalance()<amount){
+        UserReadDto senderUser=authService.loadById(receiverCard.getOwnerId());
+        UserReadDto receiverUser=authService.loadById(receiverCard.getOwnerId());
+        if (senderCard.getBalance()<cash){
             throw new NotEnoughBalance("not enough money");
         }
 
-        senderCard.setBalance(senderCard.getBalance()-amount);
-        receiverCard.setBalance(receiverCard.getBalance()+amount);
+        senderCard.setBalance(senderCard.getBalance()-cash);
+        receiverCard.setBalance(receiverCard.getBalance()+cash);
 
         mailService.receiverMessage(receiverUser.getEmail(), receiverCard.getBalance(), senderCard.getNumber());
         mailService.senderMessage(senderUser.getEmail(),senderCard.getBalance(),receiverCard.getNumber());

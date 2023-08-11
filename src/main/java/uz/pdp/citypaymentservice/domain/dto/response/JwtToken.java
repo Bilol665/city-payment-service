@@ -1,4 +1,4 @@
-package uz.pdp.citypaymentservice.domain.dto.responce;
+package uz.pdp.citypaymentservice.domain.dto.response;
 
 import lombok.*;
 
