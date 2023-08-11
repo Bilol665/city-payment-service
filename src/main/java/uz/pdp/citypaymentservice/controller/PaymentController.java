@@ -60,11 +60,11 @@ public class PaymentController {
 
     @PutMapping("/p2p")
     public ResponseEntity<CardEntity>p2p(
-            Principal principal,
             @RequestParam String receiver,
-            @RequestParam Double balance
+            @RequestParam String sender,
+            @RequestParam Double cash
     ){
-        return  ResponseEntity.ok(cardService.peerToPeer(principal,receiver,balance));
+        return  ResponseEntity.ok(cardService.peerToPeer(sender,receiver,cash));
     }
     @PutMapping("/transact")
     public ResponseEntity<CardEntity>p2p(
