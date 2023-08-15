@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uz.pdp.citypaymentservice.exception.DataNotFoundException;
+import uz.pdp.citypaymentservice.exception.NotAcceptable;
 import uz.pdp.citypaymentservice.exception.NotEnoughBalance;
 import uz.pdp.citypaymentservice.exception.RequestValidationException;
 
@@ -20,5 +21,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> notEnoughCredits(NotEnoughBalance e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
-
+    @ExceptionHandler(value = {NotAcceptable.class})
+    public ResponseEntity<String> notAcceptable(NotAcceptable e) {
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+    }
 }

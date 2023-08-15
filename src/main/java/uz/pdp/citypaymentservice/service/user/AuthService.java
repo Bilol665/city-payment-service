@@ -14,14 +14,19 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uz.pdp.citypaymentservice.domain.dto.UserDto;
 import uz.pdp.citypaymentservice.domain.dto.UserReadDto;
+import uz.pdp.citypaymentservice.domain.entity.token.JwtTokenEntity;
+import uz.pdp.citypaymentservice.exception.DataNotFoundException;
+import uz.pdp.citypaymentservice.repository.token.JwtTokenRepository;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
     private final RestTemplate restTemplate;
+    private final JwtTokenRepository jwtTokenRepository;
     @Value("${services.user-service-url}")
     private String url;
 
@@ -31,15 +36,17 @@ public class AuthService implements UserDetailsService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity= new HttpEntity<>(username,httpHeaders);
-        return restTemplate.exchange(URI.create(url+"/api/v1/auth/get"), HttpMethod.GET,entity, UserDto.class).getBody();
+        return restTemplate.exchange(URI.create(url+"/api/v1/get"), HttpMethod.GET,entity, UserDto.class).getBody();
     }
 
 
     public UserReadDto loadByName(String username){
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/auth/get/user")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/get/user")
                 .queryParam("username", username);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        JwtTokenEntity jwtTokenEntity = jwtTokenRepository.findById(username).orElseThrow(() -> new DataNotFoundException("Jwt token not found or expired!"));
+        httpHeaders.add("authorization","Bearer " + jwtTokenEntity.getToken());
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
         return restTemplate.exchange(
@@ -50,12 +57,14 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public UserReadDto loadById(UUID id){
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/auth/get/id")
-                .queryParam("id", id);
+    public UserReadDto loadById(UUID userId, Principal principal){
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/get/id")
+                .queryParam("id", userId);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        JwtTokenEntity jwtTokenEntity = jwtTokenRepository.findById(principal.getName()).orElseThrow(() -> new DataNotFoundException("Jwt token not found or expired!"));
+        httpHeaders.add("authorization","Bearer " + jwtTokenEntity.getToken());
+        HttpEntity<UUID> entity = new HttpEntity<>(httpHeaders);
 
         return restTemplate.exchange(
                 builder.toUriString(),
