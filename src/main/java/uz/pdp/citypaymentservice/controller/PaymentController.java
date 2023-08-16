@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.citypaymentservice.domain.dto.CardDto;
+import uz.pdp.citypaymentservice.domain.dto.P2PDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.service.card.CardService;
 
@@ -14,64 +15,24 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment/api/v1/card")
+@RequestMapping("/payment/api/v1")
 public class PaymentController {
     private final CardService cardService;
-    @PostMapping("/save")
-    public ResponseEntity<CardEntity>save(
-             Principal principal,
-            @RequestBody CardDto cardDto
-    ){
-        return ResponseEntity.ok(cardService.saveCard(cardDto,principal));
-    }
 
-    @GetMapping("/get")
-    public ResponseEntity<List<CardEntity>>get(
-       Principal principal
-    ){
-       return ResponseEntity.ok(cardService.getCard(principal));
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CardEntity>update(
-        @PathVariable UUID id,
-         @RequestBody CardDto cardDto
-    ){
-        return ResponseEntity.ok(cardService.updateCardById(id,cardDto));
-    }
-
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus>delete(
-            @PathVariable UUID id
-    ){
-        cardService.deleteCardById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PutMapping("/fill/{id}")
-    public ResponseEntity<CardEntity>fill(
-                Principal principal,
-                @PathVariable UUID id,
-                @RequestParam Double balance
-    ){
-        return ResponseEntity.ok(cardService.fillBalance(id,balance,principal));
-    }
 
     @PutMapping("/p2p")
     public ResponseEntity<CardEntity>p2p(
-            @RequestParam String receiver,
-            @RequestParam String sender,
-            @RequestParam Double cash
-    ){
-        return  ResponseEntity.ok(cardService.peerToPeer(sender,receiver,cash));
-    }
-    @PutMapping("/transact")
-    public ResponseEntity<CardEntity>p2p(
             Principal principal,
-            @RequestParam UUID receiver,
-            @RequestParam Double balance
+            @RequestBody P2PDto p2PDto
     ){
-        return  ResponseEntity.ok(cardService.peerToPeer(principal,receiver,balance));
+        return  ResponseEntity.ok(cardService.peerToPeer(p2PDto,principal));
     }
+//    @PutMapping("/transact")
+//    public ResponseEntity<CardEntity>p2p(
+//            Principal principal,
+//            @RequestParam UUID receiver,
+//            @RequestParam Double balance
+//    ){
+//        return  ResponseEntity.ok(cardService.peerToPeer(principal,receiver,balance));
+//    }
 }
