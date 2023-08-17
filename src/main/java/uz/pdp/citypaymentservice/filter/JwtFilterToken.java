@@ -39,7 +39,7 @@ public class JwtFilterToken extends OncePerRequestFilter {
         Jws<Claims> claimsJws = jwtService.extractToken(token);
         authenticationService.Authenticate(claimsJws.getBody(),request);
         Date expiration = claimsJws.getBody().getExpiration();
-        if(new Date().before(expiration)) throw new NotAcceptable("Expired access token!");
+        if(new Date().after(expiration)) throw new NotAcceptable("Expired access token!");
         jwtTokenRepository.save(new JwtTokenEntity(claimsJws.getBody().getSubject(),token));
 
         filterChain.doFilter(request,response);

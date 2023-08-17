@@ -28,7 +28,7 @@ public class CardService {
 
     public CardEntity saveCard(CardDto cardDto,  Principal principal){
         CardEntity card = modelMapper.map(cardDto, CardEntity.class);
-        UserReadDto userDto = authService.loadByName(principal.getName());
+        UserReadDto userDto = authService.loadByName(principal.getName(), principal);
         try {
             card.setType(CardType.valueOf(cardDto.getType()));
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class CardService {
     }
 
     public List<CardEntity>getCard(Principal  principal){
-        UserReadDto userReadDto = authService.loadByName(principal.getName());
+        UserReadDto userReadDto = authService.loadByName(principal.getName(), principal);
         return cardRepository.findCardEntitiesByOwnerId(userReadDto.getId());
     }
 
@@ -58,7 +58,7 @@ public class CardService {
     }
 
     public CardEntity fillBalance(UUID cardId,Double balance,Principal principal){
-        UserReadDto userReadDto = authService.loadByName(principal.getName());
+        UserReadDto userReadDto = authService.loadByName(principal.getName(), principal);
         CardEntity card = cardRepository.getReferenceById(cardId);
             card.setBalance(balance);
             mailService.fillBalanceMessage(userReadDto.getEmail(),card.getNumber(),card.getBalance());
