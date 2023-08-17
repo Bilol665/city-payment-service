@@ -1,17 +1,16 @@
 package uz.pdp.citypaymentservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uz.pdp.citypaymentservice.domain.dto.CardDto;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uz.pdp.citypaymentservice.domain.dto.P2PDto;
 import uz.pdp.citypaymentservice.domain.entity.card.CardEntity;
 import uz.pdp.citypaymentservice.service.card.CardService;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class PaymentController {
     private final CardService cardService;
 
 
-    @PutMapping("/p2p")
+    @PostMapping("/p2p")
     public ResponseEntity<CardEntity>p2p(
             Principal principal,
             @RequestBody P2PDto p2PDto

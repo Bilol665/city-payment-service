@@ -40,12 +40,12 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public UserReadDto loadByName(String username){
+    public UserReadDto loadByName(String username, Principal principal){
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url + "/api/v1/get/user")
                 .queryParam("username", username);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        JwtTokenEntity jwtTokenEntity = jwtTokenRepository.findById(username).orElseThrow(() -> new DataNotFoundException("Jwt token not found or expired!"));
+        JwtTokenEntity jwtTokenEntity = jwtTokenRepository.findById(principal.getName()).orElseThrow(() -> new DataNotFoundException("Jwt token not found or expired!"));
         httpHeaders.add("authorization","Bearer " + jwtTokenEntity.getToken());
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
