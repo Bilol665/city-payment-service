@@ -73,6 +73,7 @@ public class CardService {
                 .orElseThrow(()->new DataNotFoundException("Card not found"));
         UserReadDto senderUser=authService.loadById(senderCard.getOwnerId(),principal);
         UserReadDto receiverUser=authService.loadById(receiverCard.getOwnerId(),principal);
+
         if (senderCard.getBalance()< p2PDto.getCash()){
             throw new NotEnoughBalance("not enough money");
         }
@@ -92,29 +93,6 @@ public class CardService {
     }
 
     public String getById(UUID cardId) {
-        return cardRepository.findById(cardId).orElseThrow(() ->new DataNotFoundException("Card not found!")).getNumber();
+        return cardRepository.findById(cardId).orElseThrow(() -> new DataNotFoundException("Card not found!")).getNumber();
     }
-//    public CardEntity peerToPeer(Principal sender, UUID receiver, Double amount) {
-//        UserReadDto senderUser = authService.loadByName(sender.getName());
-//        UserReadDto userReadDto = authService.loadById(receiver);
-//
-//        CardEntity senderCard = cardRepository.findCardEntityByOwnerId(senderUser.getId())
-//                .orElseThrow(() -> new DataNotFoundException("Card not found"));
-//        CardEntity receiverCard = cardRepository.findCardEntityByOwnerId(receiver)
-//                .orElseThrow(() -> new DataNotFoundException("Card not found"));
-//
-//
-//        if (senderCard.getBalance() < amount) {
-//            throw new NotEnoughBalance("not enough money");
-//        }
-//
-//        senderCard.setBalance(senderCard.getBalance() - amount);
-//        receiverCard.setBalance(receiverCard.getBalance() + amount);
-//
-//        mailService.receiverMessage(userReadDto.getEmail(), amount, senderCard.getNumber());
-//        mailService.senderMessage(senderUser.getEmail(), amount, receiverCard.getNumber());
-//
-//        cardRepository.save(receiverCard);
-//        return cardRepository.save(senderCard);
-//    }
 }
