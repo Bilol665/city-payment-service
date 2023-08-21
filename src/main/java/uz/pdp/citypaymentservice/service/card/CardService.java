@@ -57,12 +57,12 @@ public class CardService {
         return cardRepository.save(card);
     }
 
-    public CardEntity fillBalance(UUID cardId,Double balance,Principal principal){
-        UserReadDto userReadDto = authService.loadByName(principal.getName(), principal);
+    public CardEntity fillBalance(UUID cardId,Double balance,Principal principal) {
         CardEntity card = cardRepository.getReferenceById(cardId);
-            card.setBalance(balance);
-            mailService.fillBalanceMessage(userReadDto.getEmail(),card.getNumber(),card.getBalance());
-            return cardRepository.save(card);
+        card.setBalance(balance);
+        UserReadDto userReadDto = authService.loadById(card.getOwnerId(), principal);
+        mailService.fillBalanceMessage(userReadDto.getEmail(), card.getNumber(), card.getBalance());
+        return cardRepository.save(card);
     }
 
     public CardEntity peerToPeer(P2PDto p2PDto, Principal principal){
